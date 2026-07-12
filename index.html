@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quanto misura la diagonale di un quadrato?</title>
+
+  <!-- Pico CSS sistema font, spaziature, pulsanti e moduli. -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  >
+
+  <!-- Le regole grafiche specifiche dell'app. -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="container">
+    <header class="intro">
+      <p class="eyebrow">Una sfida matematica</p>
+
+      <h1>Alla caccia degli irrazionali</h1>
+      Un numero irrazionale è un numero con <i> infinite cifre </i> non periodiche, come la <b> radice di 2 </b>! <br> <br>
+    </header>
+
+    <article>
+      <!-- =========================================================
+           PRIMA ESPERIENZA: CONFRONTO FRA DUE SEGMENTI
+           ========================================================= -->
+      <section class="experience">
+        <header class="section-intro">
+          <p class="section-number">1</p>
+
+          <div>
+            <h2>Avviciniamoci al numero irrazionale</h2>
+            <p>
+              Il segmento grigio è lungo esattamente \(\sqrt 2\) .<br>
+              Quello colorato è il nostro tentativo.
+            </p>
+          </div>
+        </header>
+
+        <svg
+          id="segmentCanvas"
+          class="large-diagram"
+          viewBox="0 0 900 350"
+          role="img"
+        >
+          <!-- Punto di partenza comune. -->
+          <line class="start-guide" x1="130" y1="72" x2="130" y2="292"></line>
+
+          <!-- Segnale verticale che indica la lunghezza da raggiungere. -->
+          <line
+            id="targetGuide"
+            class="target-guide"
+            x1="278.5"
+            y1="70"
+            x2="278.5"
+            y2="295"
+          ></line>
+
+          <text
+            id="targetCaption"
+            class="small-caption"
+            x="278.5"
+            y="48"
+          >
+            Il punto da raggiungere
+          </text>
+
+          <!-- Segmento fisso: la diagonale esatta. -->
+          <text class="row-label" x="80" y="125">Irrazionale</text>
+
+          <line
+            id="targetSegment"
+            class="target-segment"
+            x1="130"
+            y1="120"
+            x2="278.5"
+            y2="120"
+          ></line>
+
+          <circle class="segment-start" cx="130" cy="120" r="9"></circle>
+          <circle
+            id="targetPoint"
+            class="target-point"
+            cx="278.5"
+            cy="120"
+            r="11"
+          ></circle>
+
+          <text
+            id="targetValueLabel"
+            class="segment-value target-value"
+            x="204.25"
+            y="103"
+          >
+            √2
+          </text>
+
+          <!-- Segmento mobile: il tentativo corrente. -->
+          <text class="row-label" x="80" y="245">Tentativo</text>
+
+          <line
+            id="guessSegment"
+            class="guess-segment"
+            x1="130"
+            y1="240"
+            x2="550"
+            y2="240"
+          ></line>
+
+          <circle class="segment-start" cx="130" cy="240" r="9"></circle>
+
+          <circle
+            id="guessPoint"
+            class="guess-point"
+            cx="550"
+            cy="240"
+            r="13"
+          ></circle>
+
+          <text
+            id="guessValueLabel"
+            class="segment-value guess-value"
+            x="340"
+            y="221"
+          >
+            4
+          </text>
+        </svg>
+
+        <div class="controls-grid">
+          <label for="segmentStartValue">
+            Scegli il primo tentativo:
+          </label>
+
+          <select id="segmentStartValue">
+            <option value="0.35">0,35</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="6" selected>6</option>
+            <option value="8">8</option>
+          </select>
+
+          <label id="segmentHint">
+          Premi il pulsante e guarda il segmento colorato.
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button id="segmentStepButton" type="button">
+            Migliora il tentativo
+          </button>
+
+          <button
+            id="segmentResetButton"
+            type="button"
+            class="secondary"
+          >
+            Ricomincia
+          </button>
+        </div>
+      </section>
+
+      <section class="result-panel" aria-live="polite">
+        <h2> \(\infty\) Ma se ha infinite cifre, come lo scriviamo? \(\infty\) </h2>
+        Non lo scriviamo per intero! Ma ne scriviamo pezzi sempre più lunghi come <br>
+        \(1,4\) <br>
+        \(1,412\) <br>
+        \(1,41421\) <br>
+        \(1,41421356\) <br>
+        \(\vdots\) 
+        <h2>\(\infty\) Ma come facciamo a sapere la prossima cifra? \(\infty\)</h2>
+        Usiamo un <u>algoritmo</u> che partendo da un numero qualsiasi calcola il nuovo numero diventando <u>sempre più preciso</u> <br>
+        Come avete visto qui sopra, dopo <strong id="segmentStepNumberLabel">\(4\)</strong> tentativi il nostro algoritmo ha calcolato il numero <strong id="segmentGuess">\(4\)</strong>
+      </section>
+      
+
+      <div class="story-bridge" aria-hidden="tru  e">
+        <span></span>
+        <p>Come funziona questo algoritmo?</p>
+        <span></span>
+      </div>
+
+      <!-- =========================================================
+           SECONDA ESPERIENZA
+           ========================================================= -->
+      <section class="experience">
+        <header class="section-intro">
+          <p class="section-number">2</p>
+
+          <div>
+            <h2>Aggiustiamo la mira</h2>
+            <p>
+              L'algoritmo confronta una misura <b>troppo grande</b> con una
+              <i>troppo piccola</i> e sceglie come nuovo tentativo il punto
+              esattamente nel mezzo.
+            </p>
+          </div>
+        </header>
+
+        <svg
+          id="machineCanvas"
+          class="large-diagram machine-diagram"
+          viewBox="0 0 900 500"
+          role="img"
+        >
+
+          <line
+            id="machineMiddleGuide"
+            class="machine-result machine-middle-guide"
+            x1="243.995"
+            y1="75"
+            x2="243.995"
+            y2="440"
+          ></line>
+
+          <text
+            id="machineMiddleGuideLabel"
+            class="machine-result machine-middle-guide-label"
+            x="243.995"
+            y="55"
+          >
+            √2
+          </text>
+
+          <!-- Tutti i segmenti partono dallo stesso punto. -->
+          <line
+            class="machine-start-guide"
+            x1="145"
+            y1="72"
+            x2="145"
+            y2="438"
+          ></line>
+
+          <!-- Misura troppo grande. -->
+          <text class="machine-row-label" x="120" y="127">
+            Troppo grande
+          </text>
+
+          <line
+            id="machineLargeSegment"
+            class="machine-segment machine-large-segment"
+            x1="145"
+            y1="120"
+            x2="565"
+            y2="120"
+          ></line>
+
+          <circle
+            id="machineLargePoint"
+            class="machine-point machine-large-point"
+            cx="565"
+            cy="120"
+            r="12"
+          ></circle>
+
+          <text
+            id="machineLargeSvgValue"
+            class="machine-value machine-large-value"
+            x="355"
+            y="98"
+          >
+            6
+          </text>
+
+          <!-- Misura troppo piccola. -->
+          <text class="machine-row-label" x="120" y="407">
+            Troppo piccola
+          </text>
+
+          <line
+            id="machineSmallSegment"
+            class="machine-segment machine-small-segment"
+            x1="145"
+            y1="400"
+            x2="168.33"
+            y2="400"
+          ></line>
+
+          <circle
+            id="machineSmallPoint"
+            class="machine-point machine-small-point"
+            cx="168.33"
+            cy="400"
+            r="12"
+          ></circle>
+
+          <text
+            id="machineSmallSvgValue"
+            class="machine-value machine-small-value"
+            x="156.67"
+            y="378"
+          >
+            0,33333
+          </text>
+
+          <!-- Le due linee tratteggiate convergono sul nuovo tentativo. -->
+          <line
+            id="machineLargeConnector"
+            class="machine-result machine-connector"
+            x1="565"
+            y1="120"
+            x2="366.67"
+            y2="260"
+          ></line>
+
+          <line
+            id="machineSmallConnector"
+            class="machine-result machine-connector"
+            x1="168.33"
+            y1="400"
+            x2="366.67"
+            y2="260"
+          ></line>
+
+
+          
+          <text
+            id="machineMiddleCaption"
+            class="machine-result machine-caption"
+            x="480"
+            y="265"
+          >
+            il punto nel mezzo
+          </text>
+
+          <!-- Nuovo tentativo. All'inizio è nascosto. -->
+          <text class="machine-row-label" x="120" y="267">
+            Nuovo tentativo
+          </text>
+
+          <line
+            id="machineNewSegment"
+            class="machine-result machine-segment machine-new-segment"
+            x1="145"
+            y1="260"
+            x2="366.67"
+            y2="260"
+          ></line>
+
+          <circle
+            id="machineNewPoint"
+            class="machine-result machine-point machine-new-point"
+            cx="366.67"
+            cy="260"
+            r="14"
+          ></circle>
+
+          <text
+            id="machineNewSvgValue"
+            class="machine-result machine-value machine-new-value"
+            x="255.83"
+            y="238"
+          >
+            3,16667
+          </text>
+        </svg>
+
+        <div class="controls-grid">
+          <label for="machineStartValue">
+            Scegli il numero di partenza:
+          </label>
+
+          <select id="machineStartValue">
+            <option value="0.5">0,5</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="6" selected>6</option>
+            <option value="10">10</option>
+          </select>
+
+          <label id="machineHint">
+            Premi il pulsante per vedere comparire il nuovo tentativo.
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button id="machineStepButton" type="button">
+            Trova il punto nel mezzo
+          </button>
+
+          <button
+            id="machineResetButton"
+            type="button"
+            class="secondary"
+          >
+            Ricomincia
+          </button>
+        </div>
+
+        <section class="algorithm-explanation">
+          <h1 style="text-align: center;">\(\infty\) Come funziona questo algoritmo? \(\infty\)</h1>
+          <p style="text-align: center;">Semplice, basta applicare tre passi!</p>
+
+          <div class="algorithm-step">
+            <span class="step-number">1</span>
+
+            <div class="step-content">
+              <p class="step-title">Scegli un numero iniziale</p>
+
+              <p>
+                Ad esempio, tu hai scelto <strong id="machineChosenValueLabel">\(6\)</strong>.
+              </p>
+            </div>
+          </div>
+          <div class="algorithm-step">
+            <span class="step-number">2</span>
+
+            <div class="step-content">
+              <p class="step-title">Calcola l'altro numero come <i>il doppio dell'inverso</i></p>
+              <p>Il <i>doppio dell'inverso</i> di \(x\) è \(\displaystyle 2\cdot\frac1x\), ad esempio per <text id="machineChosenValueLabel2">\(6\)</text> 
+                è <text id="machineOppositeValueLabel">\(0,333\dots\)</text>
+              </p>
+            </div>
+          </div>
+          <div class="algorithm-step">
+            <span class="step-number">2</span>
+
+            <div class="step-content">
+              <p class="step-title">Fai la media dei due e ripeti</p>
+              <p>Ad esempio, la media tra <text id="machineChosenValueLabel3">\(6\)</text> e <text id="machineOppositeValueLabel2">\(0,333\dots\)</text>
+                è il numero <text id="machineMeanLabel">\(3,1666\dots\)</text>, <br>
+                torna al <i>passo 1</i> ma stavolta parti da <text id="machineMeanLabel2">\(3,1666\dots\)</text>
+              </p>
+            </div>
+          </div>
+        </section>
+        <br><br>
+        <h1 style="text-align: center;">\(\infty\) Vuoi capire meglio la matematica che c'è dietro? \(\infty\)</h1>
+        <p style="text-align: center;">Quello che hai appena fatto, senza saperlo, è stato applicare il <b>Metodo di Newton</b> alla funzione \(x^2-2\), <br>
+        Questo consiste nel calcolare ogni volta una nuova approssimazione partendo da una vecchia, in questo modo </p> 
+        <p class="formula">\[
+        \displaystyle x_{\mathrm{nuovo}} = \cdots\text{calcoli vari fatti con } x_{\mathrm{vecchio}} \cdots
+        \]</p>
+        <p style="text-align: center;">In questo modo se numeriamo le varie approssimazioni avremo una successione di valori</p>
+        <p class="formula">\[
+          \displaystyle x_{\mathrm{vecchissimo}},\;\; x_1,\;\; x_2,\;\; x_3,\;\; x_4,\;\; x_5,\;\; \cdots,\;\; x_{\mathrm{nuovo}}
+        \]</p>
+        <p style="text-align: center;">Se volete vedere la <i>formula</i> eccola a voi:</p>
+        <p class="formula">\[
+          \displaystyle x_{n+1} = \frac12\bigg(x_{n}+\frac{2}{x_{n}}\bigg)
+        \]</p>
+        <p style="text-align: center;">La formula generale del metodo di <i>Newton</i> invece è</p>
+        <p class="formula">\[
+          \displaystyle x_{n+1} = x_n + \frac{f(x_n)}{f'(x_n)}
+        \]</p>
+        <p style="text-align: center;">la \(f\) è la nostra funzione e il piccolo apice \('\) vicino la \(f\) indica la sua derivata prima. <br> <br>
+          Per comprendere fino in fondo da dove viene questa formula servirebbe quindi introdurre anche il concetto di derivata <br>
+          ma il discorso si farebbe troppo pesante per noi, se invece già lo conoscete e volete immergervi nei dettagli tecnici... <br> <br>
+          Vi basta cliccare <a class="pdf-link" href="Metodo_di_Newton.pdf" target="_blank" rel="noopener noreferrer" > questo link </a>.
+        </p>
+
+
+        <details>
+          <summary>Che cosa sta facendo la matematica?</summary>
+
+          <p>
+            Partiamo da un tentativo positivo \(x\). L'algoritmo gli
+            affianca il numero \(\frac{2}{x}\): uno dei due è troppo
+            grande per essere \(\sqrt2\), mentre l'altro è troppo piccolo.
+          </p>
+
+          <p>
+            Il nuovo tentativo è la media delle due misure, cioè il punto
+            esattamente nel mezzo:
+          </p>
+
+          <p class="formula">
+
+          </p>
+
+          <p>
+            Questa è la formula del metodo di Newton applicato
+            all'equazione <strong>\(x^2-2=0\)</strong>.
+            Ripetendo il procedimento, la misura troppo grande e quella
+            troppo piccola si avvicinano entrambe a \(\sqrt2\).
+          </p>
+      </details>
+    </article>
+  </main>
+
+  <!-- MathJax rende le formule LaTeX. -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+  <!-- Il comportamento dell'app è scritto in JavaScript. -->
+  <script src="script.js"></script>
+</body>
+</html>
