@@ -25,6 +25,7 @@ let segmentX = 6;
 let segmentStepNumber = 0;
 
 // Elementi HTML e SVG della prima esperienza.
+const segmentCanvas = document.querySelector("#segmentCanvas");
 const targetGuide = document.querySelector("#targetGuide");
 const targetCaption = document.querySelector("#targetCaption");
 const targetSegment = document.querySelector("#targetSegment");
@@ -376,11 +377,22 @@ function resetMachineExperience() {
 }
 
 
+function updateSegmentCanvasForScreen() {
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    segmentCanvas.setAttribute("viewBox", "20 20 760 310");
+  } else {
+    segmentCanvas.setAttribute("viewBox", "0 0 900 350");
+  }
+}
+
+
 // ================================================================
 // COLLEGAMENTO FRA PULSANTI E FUNZIONI
 // ================================================================
 
 // Prima esperienza.
+window.addEventListener("resize", updateSegmentCanvasForScreen);
+
 segmentStepButton.addEventListener(
   "click",
   makeSegmentStep
@@ -415,3 +427,5 @@ machineStartValue.addEventListener(
 // Disegno iniziale delle due esperienze.
 updateSegmentView();
 updateMachineView();
+updateSegmentCanvasForScreen();
+segmentCanvas.setAttribute("viewBox", "10 20 880 310");
