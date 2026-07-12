@@ -461,3 +461,16 @@
     font-size: 15px;
   }
 }
+
+.newton-video {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+
+  box-shadow: 0 0.5rem 1.5rem
+    color-mix(in srgb, black 12%, transparent);
+}
