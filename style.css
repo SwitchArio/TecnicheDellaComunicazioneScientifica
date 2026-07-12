@@ -57,8 +57,9 @@
 .large-diagram {
   display: block;
   width: 100%;
-  min-height: 280px;
-  max-height: 460px;
+  height: auto;
+  aspect-ratio: 900 / 350;
+
   border: 1px solid var(--pico-muted-border-color);
   border-radius: var(--pico-border-radius);
   background: var(--pico-card-background-color);
@@ -433,10 +434,6 @@
     align-items: center;
   }
 
-  .large-diagram {
-    min-height: 230px;
-  }
-
   .machine-diagram {
     min-height: 300px;
   }
@@ -445,10 +442,13 @@
     grid-template-columns: 1fr;
   }
 
-  /*
-    Su telefono riduciamo un po' le scritte interne all'SVG,
-    senza cambiare i calcoli o le coordinate.
-  */
+  .large-diagram {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+
   .row-label,
   .segment-value,
   .machine-row-label,
@@ -462,6 +462,7 @@
   }
 }
 
+
 .newton-video {
   display: block;
   width: 100%;
@@ -474,3 +475,4 @@
   box-shadow: 0 0.5rem 1.5rem
     color-mix(in srgb, black 12%, transparent);
 }
+
